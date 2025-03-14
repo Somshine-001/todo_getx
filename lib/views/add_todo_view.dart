@@ -1,19 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_getx/controllers/todo_controller.dart';
+import 'package:todo_getx/models/todo_model.dart';
 
-class AddTodoView extends StatelessWidget {
-  AddTodoView({super.key});
+class AddTodoView extends StatefulWidget {
+  AddTodoView({super.key, this.todo});
+  TodoModel? todo;
 
+  @override
+  State<AddTodoView> createState() => _AddTodoViewState();
+}
+
+class _AddTodoViewState extends State<AddTodoView> {
   TodoController todoController = Get.put(TodoController());
+
   TextEditingController titleController = TextEditingController();
   TextEditingController subtitleController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.todo != null) {
+      titleController.text = widget.todo!.title;
+      subtitleController.text = widget.todo!.subtitle;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("เพิ่มรายการ", style: TextStyle(fontSize: 20)),
+        title: Text(
+          widget.todo != null ? "แก้ไขรายการ" : "เพิ่มรายการ",
+          style: TextStyle(fontSize: 20),
+        ),
         backgroundColor: Colors.green,
       ),
       body: Container(
@@ -46,10 +66,16 @@ class AddTodoView extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 if (titleController.text.isEmpty) return;
-                todoController.addTodo(
-                  titleController.text,
-                  subtitleController.text,
-                );
+                if (widget.todo != null) {
+                  widget.todo!.title = titleController.text;
+                  widget.todo!.subtitle = subtitleController.text;
+                  todoController.updateTodo(widget.todo!);
+                } else {
+                  todoController.addTodo(
+                    titleController.text,
+                    subtitleController.text,
+                  );
+                }
                 Get.back();
                 Get.snackbar(
                   "แจ้งเตือน",
@@ -61,7 +87,10 @@ class AddTodoView extends StatelessWidget {
               child: Text("บันทึก", style: TextStyle(fontSize: 18)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 15,
+                ),
               ),
             ),
           ],
@@ -70,4 +99,3 @@ class AddTodoView extends StatelessWidget {
     );
   }
 }
-

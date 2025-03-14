@@ -70,10 +70,14 @@ class HomeView extends StatelessWidget {
                         ),
                         trailing: IconButton(
                           onPressed: () {
-                            todoController.deleteTodo(index);
+                            print(todo.toJson());
+                            todoController.deleteTodo(todo.docId ?? '');
                           },
                           icon: const Icon(Icons.delete, color: Colors.red),
                         ),
+                        onTap: () {
+                          Get.to(AddTodoView(todo: todo));
+                        },
                       ),
                     );
                   },
